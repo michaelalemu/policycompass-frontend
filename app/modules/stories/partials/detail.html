@@ -5,11 +5,13 @@
     </div>
 
     <div class="pc-visualization-formcontrols">
-        <div class="form-group pull-left btn-group">
+        <div class="btn-group">
             <a type="button" class="btn btn-primary  btn-create" ng-if="userState.loggedIn && (userState.userPath == story.creator_path || userState.isAdmin)"  href="#!/stories/{{ story.id }}/edit">Edit</a>
             <a href="" id="downloadButton" class="btn btn-default fa-file-text-o" ng-click="downloadStory()">Download</a>
-            <a href="" id="deleteButton" class="btn btn-danger fa-trash-o" ng-click="deleteChapter()">Delete</a>
+            <a href="" id="deleteButton" class="btn btn-danger fa-trash-o" ng-if="userState.loggedIn && (userState.userPath == story.creator_path || userState.isAdmin)" ng-click="deleteStory(story)">Delete</a>
         </div>
+
+        <a href="#" ng-if="story.is_draft" ng-disabled="story.is_draft" class="btn btn-default btn-danger">Draft</a>
     </div>
 
     <div class="content-body">
@@ -28,7 +30,19 @@
                     <div ng-bind-html="chapter.text"></div>
 
                     <div ng-repeat="content in chapter.contents">
-                        <pc-visualization visualization-id="{{content.contentId}}"></pc-visualization>
+                        <div>
+
+                            <div ng-switch on="content.type">
+                                <pc-visualization ng-switch-when="visualization" visualization-id="{{content.index}}"></pc-visualization>
+
+                                <pc-dataset ng-switch-when="dataset" dataset-id="{{content.index}}"></pc-dataset>
+
+                                <div ng-switch-default>
+                                    <div class="alert alert-danger" style="margin-bottom: 0">Sorry, there is currently no renderer available for this {{ content.type }}.</div>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
             </div>
